@@ -99,6 +99,9 @@ const setupServer = (server) => {
     server.app.set('view engine', 'pug');
     debug('pug set');
 
+    server.app.set('ip', server.ipaddress);
+    server.app.set('port', server.port);
+
     for (let route in routes.get) {
       if (routes.get.hasOwnProperty(route)) {
         debug('get/' + route);
@@ -125,7 +128,7 @@ const startServer = (server) => {
   debug('startServer');
   return new Promise ((resolve) => {
     //  Start the app on the specific interface(and port).
-    server.app.listen(server.port, server.ipaddress, () => {
+    server.app.listen(server.app.get('port'), server.app.get('ip'), () => {
       logger('%s: Node server started on %s:%d ...',
       Date(Date.now()), server.ipaddress, server.port);
     });
