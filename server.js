@@ -10,12 +10,9 @@ const logger = createDebug('server:log');
 
 
 const main = () => {
+  'use strict';
   debug('main');
     const server = {};
-
-    logger('this is logged');
-    debug('this is debug');
-
 
     setupVariables(server)
     .then(setupTerminationHandlers)
@@ -28,6 +25,7 @@ const main = () => {
 
 
 const terminate = (sig) => {
+  'use strict';
   debug('terminate');
     if (typeof sig === 'string') {
         logger('%s: Received %s - terminating sample app ...',
@@ -39,8 +37,9 @@ const terminate = (sig) => {
 
 
 const setupTerminationHandlers = (server) => {
+  'use strict';
   debug('setupTerminationHandlers');
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
 
     //  Process on exit and signals.
     process.on('exit', () => {
@@ -50,7 +49,7 @@ const setupTerminationHandlers = (server) => {
     // Removed 'SIGPIPE' from the list - bugz 852598.
     ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
-    ].forEach((element, index, array) => {
+    ].forEach((element) => {
       process.on(element, () => {
         terminate(element);
       });
@@ -62,8 +61,9 @@ const setupTerminationHandlers = (server) => {
 
 
 const setupVariables = (server) => {
+  'use strict';
   debug('setupVariables');
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     //  Set the environment variables we need.
     server.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
     server.port = process.env.OPENSHIFT_NODEJS_PORT || 5000;
@@ -83,20 +83,21 @@ const setupVariables = (server) => {
 
 
 const setupServer = (server) => {
+  'use strict';
   debug('setupServer');
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const routes = createRoutes();
     debug('%O', routes);
 
     server.app = express();
-    debug('express set')
+    debug('express set');
 
     server.app.use(express.static(__dirname + 'public'));
-    debug('public set')
+    debug('public set');
 
     server.app.set('view engine', 'pug');
-    debug('pug set')
+    debug('pug set');
 
     for (let route in routes.get) {
       if (routes.get.hasOwnProperty(route)) {
@@ -120,8 +121,9 @@ const setupServer = (server) => {
 
 
 const startServer = (server) => {
+  'use strict';
   debug('startServer');
-  return new Promise ((resolve, reject) => {
+  return new Promise ((resolve) => {
     //  Start the app on the specific interface(and port).
     server.app.listen(server.port, server.ipaddress, () => {
       logger('%s: Node server started on %s:%d ...',
@@ -134,6 +136,7 @@ const startServer = (server) => {
 
 
 const createRoutes = () => {
+  'use strict';
   debug('createRoutes');
   const routes = {
     get: {},
@@ -157,8 +160,9 @@ const createRoutes = () => {
 };
 
 const redirectSec = (req, res, next) => {
+  'use strict';
   if (!global.dev) {
-    if(req.headers['x-forwarded-proto'] == 'http') {
+    if(req.headers['x-forwarded-proto'] === 'http') {
       res.redirect('https://' + req.headers.host + req.path);
     }
   }
